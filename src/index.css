@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --text: #ffffff;
+  --component-layer: rgba(255, 255, 255, 0.05);
+  --borderRadius: 0.8rem;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-user-select: none !important;
+  -webkit-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  transition: 0.3s;
+  scroll-behavior: smooth;
+}
+
+textarea::selection{
+  background: rgba(0, 0, 0, 0) !important;
+}
+
+body {
+  color: var(--text);
+  border: 0;
+  padding: 0 2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  border: 0;
+  border-radius: var(--borderRadius);
+  padding: 0.2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.button:hover {
+  background: var(--component-layer);
+  transform: scale(1.1);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem; 
+  color: #eee; 
+  text-transform: uppercase;
+}
+
+.search {
+  box-sizing: border-box;
+  width: 50vw;
+  display: block;
+  border-radius: var(--borderRadius);;
+  border: 0;
+  outline: 0;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--component-layer);
+  margin-bottom: 2rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  color: white;
+}
+
+#clipboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 1rem;
+}
+
+#clipboard textarea {
+  padding: 1rem;
+  border: 2px solid var(--component-layer);
+  border-radius: var(--borderRadius);
+  min-height: 10rem;
+  background: var(--component-layer);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.1rem;
+  resize: none;
+  outline: none;
+  caret-color: transparent;
+  cursor: pointer;
+  width: 100%;
+  display: block;
+  overflow-y: hidden !important;
+}
+
+textarea * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+}
+
+.textarea::selection, textarea *::selection {
+  background-color: transparent;
+}
+
+#clipboard textarea:hover, #clipboard textarea:focus {
+  box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.3);
+  transform: scale(1.040);
+}
+
+#clipboard textarea:hover {
+  background-color: rgba(0, 102, 255, 0.654);
+}
+
+.wc {
+  position: relative; 
+  bottom: 1rem; 
+  left: 0.5rem; 
+  width: fit-content; 
+  border-radius: 100rem;
+  padding: 0.3rem 0.6rem; 
+  font-size: 0.75rem; 
+  margin-top: -1.5rem; 
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+}
+
+.info {
+  position: relative; 
+  bottom: 1rem; 
+  left: 8rem; 
+  width: fit-content; 
+  border-radius: 100rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem; 
+  margin-top: -1rem; 
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(0.5rem);
+  -webkit-backdrop-filter: blur(0.5rem);
+}
