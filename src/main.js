@@ -2,6 +2,10 @@ const { ipcRenderer } = require('electron');
 const renew = () => fetch('paste').then(e => e.text()).then(e => update(e.split("<NEXTPASTE>")))
 let renderOnce = true
 
+if (!localStorage.background) localStorage.background = '#222222'
+if (!localStorage.opacity) localStorage.opacity = 100
+if (!localStorage.maxPastes) localStorage.maxPastes = 300
+
 ipcRenderer.on('renew', () => renew())
 
 if (renderOnce) {
@@ -13,12 +17,10 @@ function setBackground() {
     let color = localStorage.background;
     let opacity = localStorage.opacity;
   
-    // Parse the hex value for the color
     let r = parseInt(color.slice(1, 3), 16);
     let g = parseInt(color.slice(3, 5), 16);
     let b = parseInt(color.slice(5, 7), 16);
   
-    // Set the body's background color and opacity using the rgba function
     document.body.style.background = `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
 }; setBackground()
 
@@ -27,7 +29,7 @@ setInterval(() => setBackground(), 400)
 function update(cache) {
     let searching = document.getElementById('search')
     document.getElementById('clipboard').innerHTML = null
-    cache = cache.reverse().slice(0, localStorage.maxPastes || 200);
+    cache = cache.reverse().slice(0, localStorage.maxPastes);
     document.getElementById("amount").textContent = cache.length - 1 + " results";
     if (searching.value) {
         cache = cache.filter(e => e.toLowerCase().includes(searching.value.toLowerCase()))
