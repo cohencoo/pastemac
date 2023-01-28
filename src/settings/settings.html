@@ -62,6 +62,21 @@
             <div class="marker"></div>
         </div>
     </div>
+
+    <h4>Keyboard Shortcuts</h4>
+    <div class="panel">
+        <p>Show PasteMac</p>
+        <br>
+        <span>Hold <kbd>Option</kbd> <kbd>V</kbd> to temporarily show PasteMac </span>
+    </div>
+
+    <h4>Manage Pastes</h4>
+    <div class="panel">
+        <div class="flex" style="align-items: center">
+            <p>Delete Latest Paste</p>
+            <button onclick="ipcRenderer.sendSync('clearLast')">Delete</button>
+        </div>
+    </div>
     <script src="color.js"></script>
 </body>
 </html>

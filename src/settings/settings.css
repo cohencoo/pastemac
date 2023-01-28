@@ -45,6 +45,27 @@ hr {
     margin: 1rem 0;
 }
 
+kbd {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.9rem;
+  display: inline;
+  color: #eee;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.5rem 2rem;
+  font-size: 1;
+  cursor: pointer;
+  background-color: rgba(200, 50, 50, 0.8);
+  color: #eee;
+  outline: 0;
+  font-family: inherit;
+}
+
 input[type="range"] {
   appearance: none;
   -webkit-appearance: none;
