@@ -36,7 +36,7 @@ function update(cache) {
         document.getElementById("amount").textContent = cache.length + " results";
         cache.forEach(pasted => {
             pasted = pasted.split("<PASTERECORD>");
-            if (!pasted[0]) return // [0]: text. [1]: time stamp.
+            if (!pasted[0] || !pasted[1]) return // [0]: text. [1]: time stamp.
             
             var e = document.createElement('div')
             var field = document.createElement('textarea')
@@ -61,7 +61,7 @@ function update(cache) {
     }
     else cache.forEach(pasted => {
         pasted = pasted.split("<PASTERECORD>");
-        if (!pasted[0]) return // [0]: text. [1]: time stamp.
+        if (!pasted[0] || !pasted[1]) return // [0]: text. [1]: time stamp.
         
         var e = document.createElement('div')
         var field = document.createElement('textarea')

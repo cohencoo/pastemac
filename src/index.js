@@ -5,9 +5,11 @@ const fs = require('fs');
 let clip = fs.readFileSync(path.join(__dirname, 'paste'), 'utf8').split("<NEXTPASTE>")
 if (require('electron-squirrel-startup')) app.quit();
 
+let mainWindow = null;
+
 const createWindow = () => {
   const { width } = screen.getPrimaryDisplay().workAreaSize
-  let mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: width,
     height: 400,
     x: 0,
@@ -28,7 +30,7 @@ const createWindow = () => {
 
   const settings = new BrowserWindow({
     width: 500,
-    height: 425,
+    height: 530,
     transparent: true,
     frame: false,
     icon: __dirname + '/logo.png',
@@ -88,25 +90,48 @@ const createWindow = () => {
     settings.hide();
     event.returnValue = ""
   })
+  ipcMain.on('clearLast', (event) => {
+    clip.pop()
+    let temp = clip.join("<NEXTPASTE>")
+    if (temp.includes("<NEXTPASTE><NEXTPASTE>")) temp = temp.replaceAll("<NEXTPASTE><NEXTPASTE>", "<NEXTPASTE>")
+    fs.writeFileSync(path.join(__dirname, 'paste'), temp, 'utf-8')
+    clip = fs.readFileSync(path.join(__dirname, 'paste'), 'utf8').split("<NEXTPASTE>")
+    mainWindow.webContents.send("renew")
+    event.returnValue = ""
+  })
   globalShortcut.register('Option+V', () => {
     mainWindow.webContents.send("renew")
     mainWindow.show()
   })
+  mainWindow.on('close', (e) => {
+    e.preventDefault();
+    mainWindow.hide();
+  });
+  settings.on('close', (e) => {
+    e.preventDefault();
+    settings.hide();
+  });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 };
-
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow()
+  mainWindow.show()
+})
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  if (mainWindow) {
+    mainWindow.webContents.send("renew")
+    mainWindow.show()
+  }
 });
 
 setInterval(() => {
   if (clipboard.readText().split("<PASTERECORD>")[0] != clip[clip.length - 1].split("<PASTERECORD>")[0]) {
-    if (clipboard.readText().length > 900000) return;
+    if (clipboard.readText().length > 90000) return;
     let date = new Date(); let dd = date.getDate(); 
     let dayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
     let mm = date.getMonth() + 1; 
@@ -123,4 +148,4 @@ setInterval(() => {
     try { fs.appendFileSync(path.join(__dirname, 'paste'), String(clipboard.readText())+"<PASTERECORD>"+record+"<NEXTPASTE>", 'utf-8')}
     catch(e) {}
   }
-}, 250);
+}, 300);
