@@ -1,46 +1,37 @@
-const colorValue = document.querySelector('#colorValue')
-const colorPreview = document.querySelector('.colorPreview')
-const colorInput = document.querySelector('#color')
-const opacityInput = document.querySelector('#opacity')
-const limitInput = document.querySelector('#limit')
-const limiterPreview = document.querySelectorAll('.limitMarker')
+const colorValue = document.querySelector("#colorValue")
+const colorPreview = document.querySelector(".colorPreview")
+const colorInput = document.querySelector("#color")
+const limitInput = document.querySelector("#limit")
+const limitPreview = document.querySelector(".limitPreview")
 
 function setBackground() {
-  let color = localStorage.background;
-  let opacity = localStorage.opacity;
+    let color = localStorage.background
 
-  let r = parseInt(color.slice(1, 3), 16);
-  let g = parseInt(color.slice(3, 5), 16);
-  let b = parseInt(color.slice(5, 7), 16);
+    let r = parseInt(color.slice(1, 3), 16)
+    let g = parseInt(color.slice(3, 5), 16)
+    let b = parseInt(color.slice(5, 7), 16)
 
-  document.body.style.background = `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+    document.body.style.background = `rgb(${r}, ${g}, ${b}`
 }
 
-// Update text previews
-setInterval(() => {
-    try {
-        setBackground()
-        colorValue.textContent = localStorage.background
-        colorPreview.style.background = localStorage.background
-    } catch(e) {}
-}, 100)
-
-// Set values from localStorage
 if (localStorage) {
     setBackground()
     try {
-        colorInput.value = localStorage.background;
-        opacityInput.value = localStorage.opacity;
-        limitInput.value = localStorage.maxPastes;
-        document.getElementById(localStorage.maxPastes).style.opacity = 1
-    } catch(e) {}
+        colorInput.value = localStorage.background
+        colorValue.textContent = localStorage.background
+        colorPreview.style.background = localStorage.background
+        limitInput.value = localStorage.maxPastes
+        limitPreview.textContent = localStorage.maxPastes
+    } catch (e) {}
 }
 
-limitInput.addEventListener('input', (e) => {
-    localStorage.maxPastes = e.target.value
-    for (let i = 0; i < limiterPreview.length; i++) limiterPreview[i].style.opacity = 0
-    document.getElementById(localStorage.maxPastes).style.opacity = 1
+colorInput.addEventListener("input", (e) => {
+    localStorage.background = e.target.value
+    colorValue.textContent = e.target.value
+    colorPreview.style.background = e.target.value
+    setBackground()
 })
-
-colorInput.addEventListener('input', (e) => localStorage.background = e.target.value)
-opacityInput.addEventListener('input', (e) => localStorage.opacity = e.target.value)
+limitInput.addEventListener("input", (e) => {
+    localStorage.maxPastes = e.target.value
+    limitPreview.textContent = e.target.value
+})

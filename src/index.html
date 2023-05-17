@@ -1,27 +1,68 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>pasteMac</title>
-    <link rel="stylesheet" href="index.css"/>
-  </head>
-  <body>
-    <div style="margin-top: 2rem" class="flex">
-      <div>
-        <p class="title">Recent Clipboard</p>
-        <span style="color: #999; font-size: 0.9rem" id="amount"></span>
-      </div>
-      <input type="text" class="search" placeholder="Search Clipboard" oninput="renew()" name="search" id="search">
-      <div style="display: flex">
-        <div onclick="ipcRenderer.sendSync('settings')" class="button" style="margin-right: 1rem">
-          <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    <head>
+        <meta charset="UTF-8" />
+        <title>PasteMac</title>
+        <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+        <div style="margin: 2rem 10px;" class="flex">
+            <div>
+                <p class="title"><span id="total-pastes"></span> total pastes</p>
+                <span style="color: #999; font-size: 0.9rem;" id="amount"></span>
+            </div>
+            <input
+                type="text"
+                class="search"
+                placeholder="Search Clipboard"
+                oninput="renew()"
+                name="search"
+                id="search"
+            />
+            <!-- <input type="time" id="default-time-filter" />
+            <input type="date" id="default-date-filter" /> -->
+
+            <div style="display: flex;">
+                <div
+                    onclick="ipcRenderer.sendSync('settings')"
+                    class="button"
+                    style="margin-right: 1rem;"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                        ></path>
+                    </svg>
+                </div>
+                <div onclick="ipcRenderer.sendSync('done')" class="button">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="width: 2rem; height: 2rem;"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
         </div>
-        <div onclick="ipcRenderer.sendSync('done')" class="button">
-          <svg xmlns="http://www.w3.org/2000/svg" style="width: 2rem; height: 2rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </div>
-      </div>
-    </div>
-    <div onclick="ipcRenderer.sendSync('done')" id="clipboard"></div>
-    <script src="main.js"></script>
-  </body>
+        <div id="clipboard"></div>
+        <script src="assets/menu.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>

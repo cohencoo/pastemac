@@ -1,82 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings</title>
-    <link rel="stylesheet" href="../index.css">
-    <link rel="stylesheet" href="settings.css">
-    <script>
-        const { ipcRenderer } = require('electron');
-    </script>
-</head>
-<body>
-    <div class="flex">
-        <h4>Appearance</h4>
-        <div class="button" style="margin-top: 0.5rem" onclick="ipcRenderer.sendSync('closeSettings')">
-            <svg xmlns="http://www.w3.org/2000/svg" style="width: 2rem; height: 2rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Settings</title>
+        <link rel="stylesheet" href="../index.css" />
+        <link rel="stylesheet" href="settings.css" />
+        <script>
+            const { ipcRenderer } = require("electron")
+        </script>
+    </head>
+    <body>
+        <div class="flex">
+            <h4>Appearance</h4>
+            <div
+                class="button"
+                style="margin-top: 0.5rem;"
+                onclick="ipcRenderer.sendSync('closeSettings')"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="width: 2rem; height: 2rem;"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </div>
         </div>
-    </div>
-    <input style="display: none" id="color" type="color">
-    <div class="panel">
-        <div class="flex" style="align-items: center">
-            <p>Theme</p>
-            <div onclick="document.getElementById('color').click()" class="color">
-                <div class="colorPreview"></div>
-                <div>
-                    <span id="colorValue"></span>
-                    <br>
-                    <span style="color: #999; font-size: 0.9rem;">Click to change</span>
+        <input style="display: none;" id="color" type="color" />
+        <div class="panel">
+            <div class="flex" style="align-items: center;">
+                <p>Theme</p>
+                <div onclick="document.getElementById('color').click()" class="color">
+                    <div class="colorPreview"></div>
+                    <div>
+                        <span id="colorValue"></span>
+                        <br />
+                        <span style="color: #999; font-size: 0.9rem;">Click to change</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <hr>
-
-        <div class="flex" style="align-items: center">
-            <p>Opacity</p>
-            <div style="width: 60%;">
-                <span id="opacityValue"></span>
-                <input type="range" min="0" max="100" step="1" id="opacity">
+        <h4>Layout</h4>
+        <div class="panel">
+            <p>Limit amount: show up to <b class="limitPreview"></b> pastes</p>
+            <input
+                style="margin-top: 1rem;"
+                type="range"
+                min="150"
+                max="1500"
+                step="150"
+                id="limit"
+            />
+            <div class="flex" style="margin-top: 1rem; margin-left: 0.25rem;">
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
+                <div class="marker"></div>
             </div>
         </div>
-    </div>
 
-    <h4>Layout</h4>
-    <div class="panel">
-        <p>Limit amount</p>
-        <input style="margin-top: 1rem" type="range" min="150" max="750" step="150" id="limit">
-        <div class="flex" style="margin-top: 0.2rem">
-            <span id="150" class="limitMarker">150</span>
-            <span id="300" class="limitMarker">300</span>
-            <span id="450" class="limitMarker">450</span>
-            <span id="600" class="limitMarker">600</span>
-            <span id="750" class="limitMarker">750</span>
+        <h4>Keyboard Shortcuts</h4>
+        <div class="panel">
+            <p>Show PasteMac</p>
+            <br />
+            <span>Hold <kbd>Option</kbd> <kbd>V</kbd> to temporarily show PasteMac </span>
         </div>
-        <div class="flex" style="margin-left: 0.25rem">
-            <div class="marker"></div>
-            <div class="marker"></div>
-            <div class="marker"></div>
-            <div class="marker"></div>
-            <div class="marker"></div>
-        </div>
-    </div>
 
-    <h4>Keyboard Shortcuts</h4>
-    <div class="panel">
-        <p>Show PasteMac</p>
-        <br>
-        <span>Hold <kbd>Option</kbd> <kbd>V</kbd> to temporarily show PasteMac </span>
-    </div>
-
-    <h4>Manage Pastes</h4>
-    <div class="panel">
-        <div class="flex" style="align-items: center">
-            <p>Delete Latest Paste</p>
-            <button onclick="ipcRenderer.sendSync('clearLast')">Delete</button>
-        </div>
-    </div>
-    <script src="color.js"></script>
-</body>
+        <script src="color.js"></script>
+    </body>
 </html>
