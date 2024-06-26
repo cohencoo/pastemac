@@ -1,32 +1,50 @@
-const {
-    app,
-    BrowserWindow,
-    TouchBar,
-    clipboard,
-    ipcMain,
-    globalShortcut,
-    screen,
-} = require("electron")
-const { TouchBarButton } = TouchBar
+const { app, BrowserWindow, clipboard, ipcMain, globalShortcut, screen } = require("electron")
 const path = require("path")
 const fs = require("fs")
+const axios = require("axios")
+const { exec } = require("child_process")
+let mainWindow = null
+
+const checkLocations = {
+    "index.css": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/index.css",
+    "app.js": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/app.js",
+    "index.html": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/index.html",
+}
+
+async function checkUpdates() {
+    for (const item of Object.keys(checkLocations)) {
+        const localFilePath = path.join(__dirname, item)
+
+        try {
+            const localContent = fs.readFileSync(localFilePath, "utf-8")
+            const response = await axios.get(checkLocations[item])
+            const remoteContent = response.data
+
+            if (localContent === remoteContent) {
+            } else {
+                console.log(`${item} has updates available. Updating...`)
+                fs.writeFileSync(localFilePath, remoteContent, "utf-8")
+            }
+        } catch (error) {}
+    }
+    return true
+}
 
 if (require("electron-squirrel-startup")) app.quit()
 
-if (!fs.existsSync(path.join(__dirname, "paste"))) {
+if (!fs.existsSync(path.join(__dirname, "images"))) fs.mkdirSync(path.join(__dirname, "images"))
+if (!fs.existsSync(path.join(__dirname, "paste")))
     fs.writeFileSync(path.join(__dirname, "paste"), "{}", "utf-8")
-}
 
 let clip = JSON.parse(fs.readFileSync(path.join(__dirname, "paste"), "utf8"))
-let mainWindow = null
 
 const createWindow = () => {
-    const { width } = screen.getPrimaryDisplay().workAreaSize
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize
     mainWindow = new BrowserWindow({
-        width: width,
+        width,
         height: 400,
         x: 0,
-        y: 1000,
+        y: height,
         transparent: true,
         frame: false,
         resizable: false,
@@ -61,36 +79,17 @@ const createWindow = () => {
     settings.loadFile(path.join(__dirname, "settings/settings.html"))
     settings.hide()
 
-    const touchBar = new TouchBar({
-        items: [
-            new TouchBarButton({
-                label: "✕",
-                backgroundColor: "#ff3826",
-                click: () => mainWindow.hide(),
-            }),
-            new TouchBarButton({
-                label: "⚙️",
-                click: () => settings.show(),
-            }),
-        ],
-    })
-    mainWindow.setTouchBar(touchBar)
-
-    settings.setTouchBar(
-        new TouchBar({
-            items: [
-                new TouchBarButton({
-                    label: "✕",
-                    backgroundColor: "#ff3826",
-                    click: () => settings.hide(),
-                }),
-            ],
-        })
-    )
+    mainWindow.setAlwaysOnTop(true, "floating")
+    mainWindow.setVisibleOnAllWorkspaces(true)
 
     ipcMain.on("settings", (event) => {
         settings.show()
         event.returnValue = ""
+    })
+    ipcMain.on("quit", (event) => {
+        event.returnValue = ""
+        app.quit()
+        process.exit()
     })
     ipcMain.on("done", (event) => {
         mainWindow.hide()
@@ -110,6 +109,9 @@ const createWindow = () => {
         mainWindow.webContents.send("renew")
         mainWindow.show()
     })
+    globalShortcut.register("F2", () => {
+        exec("pmset displaysleepnow")
+    })
     mainWindow.on("close", (e) => {
         e.preventDefault()
         mainWindow.hide()
@@ -120,39 +122,95 @@ const createWindow = () => {
     })
     mainWindow.loadFile(path.join(__dirname, "index.html"))
 }
-app.on("ready", () => {
-    createWindow()
-    mainWindow.show()
+app.on("ready", async () => {
+    if (await checkUpdates()) {
+        createWindow()
+        mainWindow.show()
+    }
 })
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") app.quit()
 })
 
-app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    if (mainWindow) {
-        mainWindow.webContents.send("renew")
-        mainWindow.show()
+app.on("activate", async () => {
+    if (await checkUpdates()) {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (mainWindow) {
+            mainWindow.webContents.send("renew")
+            mainWindow.show()
+        }
     }
 })
 
-// if (clipboard.readImage()) console.log(clipboard.readImage().toDataURL())
-setInterval(() => {
-    if (clipboard.readText()) {
-        const id = Date.now()
-        const text = clipboard.readText()
-        if (text.length > 90000) return
+function clipper(data) {
+    const keys = Object.keys(clip)
+    if (clip[keys[keys.length - 1]]?.text == data.text) return
 
-        const data = {
+    clip[data.id] = data
+    fs.writeFileSync(path.join(__dirname, "paste"), JSON.stringify(clip), "utf-8")
+}
+
+function onClipboardChange() {
+    const id = Date.now()
+    const type = clipboard.availableFormats()[clipboard.availableFormats().length - 1]
+
+    if (type?.toString()?.includes("image")) {
+        const buffy = clipboard.readImage()?.toPNG()
+        const name = id + ".png"
+
+        fs.writeFileSync(path.join(__dirname, "images", name), buffy)
+        const img = path.join(__dirname, "images", name)
+
+        clipper({
+            text: img,
+            image: img,
+            time: id,
+            type,
+            id,
+        })
+        return
+    } else {
+        const text = clipboard.readText()
+        if (!text || text.length > 90000) return
+
+        clipper({
             text,
             time: id,
+            type,
             id,
-        }
+        })
+    }
+}
 
-        const keys = Object.keys(clip)
-        if (clip[keys[keys.length - 1]]?.text == data.text) return
+let lastTextValue = null
+setInterval(() => {
+    const value =
+        clipboard.readImage()?.toPNG().length > 200
+            ? clipboard.readImage()?.toPNG().length
+            : clipboard.readText()
 
-        clip[id] = data
-        fs.writeFileSync(path.join(__dirname, "paste"), JSON.stringify(clip), "utf-8")
+    if (value !== lastTextValue) {
+        lastTextValue = value
+        onClipboardChange(value)
     }
 }, 300)
+
+// wanting to get it to work here, but it's not working.
+
+// setInterval(() => {
+//     const value =
+//         clipboard.readImage()?.toPNG().length > 200
+//             ? clipboard.readImage()?.toPNG().length
+//             : clipboard.readText()
+
+//     // only trigger clipboard change if either text value is different, or image value is different
+//     if (value !== lastTextValue && clipboard.readImage()?.toPNG().length < 200) {
+//         lastTextValue = value
+//         onClipboardChange(value)
+//     }
+//     if (value !== lastImageValue && clipboard.readImage()?.toPNG().length > 200) {
+//         lastImageValue = value
+//         onClipboardChange(value)
+//         lastTextValue = value
+//     }
+// }, 300)
