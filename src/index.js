@@ -21,6 +21,8 @@ const checkLocations = {
 }
 
 async function checkUpdates() {
+    if (!app.isPackaged) return true
+
     let didUpdate = false
     for (const item of Object.keys(checkLocations)) {
         const localFilePath = path.join(__dirname, item)
