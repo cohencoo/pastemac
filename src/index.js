@@ -14,6 +14,7 @@ const { exec } = require("child_process")
 let mainWindow = null
 
 const checkLocations = {
+    "index.js": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/index.js",
     "index.css": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/index.css",
     "app.js": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/app.js",
     "index.html": "https://raw.githubusercontent.com/cohencoo/pastemac/master/src/index.html",
@@ -31,7 +32,7 @@ async function checkUpdates() {
 
             if (localContent === remoteContent) {
             } else {
-                console.log(`${item} has updates available. Updating...`)
+                didUpdate = true
                 fs.writeFileSync(localFilePath, remoteContent, "utf-8")
             }
         } catch (error) {}
@@ -39,7 +40,7 @@ async function checkUpdates() {
     if (didUpdate) {
         new Notification({
             title: "Update available",
-            body: "PasteMac is ready to update. Relaunch for newest changes!",
+            body: "PasteMac is ready to update. Relaunch for new stuff!",
         }).show()
     }
     return true
