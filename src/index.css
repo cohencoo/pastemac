@@ -2,17 +2,15 @@
 
 :root {
     --text: #ffffff;
-    --component-layer: rgba(255, 255, 255, 0.05);
+    --component-layer: rgba(255, 255, 255, 0.02);
     --borderRadius: 0.8rem;
 }
 
 * {
     box-sizing: border-box;
-    -moz-user-select: none !important;
     -webkit-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
-    transition: 0.3s;
     scroll-behavior: smooth;
 }
 
@@ -23,8 +21,34 @@ textarea::selection {
 body {
     color: var(--text);
     border: 0;
-    padding: 0 2rem;
+    padding: 0;
+    margin: 0;
     font-family: "Montserrat", sans-serif;
+    transition: 0.5s cubic-bezier(1, 0, 0, 1);
+    /* margin-top: 10rem; */
+}
+
+#app {
+    min-height: calc(400px); /* index.js window size */
+    background-image: url(assets/noise.png);
+    background-color: rgba(0, 0, 0, 0.9);
+    background-size: 6%;
+}
+
+.nav {
+    display: grid;
+    grid-template-columns: 0.25fr 0.5fr 0.8fr 0.2fr 0.1fr;
+    margin: 0 0 1rem 0;
+    align-items: center;
+    gap: 1rem;
+    background: rgb(25, 25, 25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 2rem;
+    border-radius: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 5rem rgb(22, 22, 22);
 }
 
 .flex {
@@ -40,13 +64,27 @@ body {
     width: 2.5rem;
     height: 2.5rem;
     display: flex;
+    color: #999;
     justify-content: center;
     align-items: center;
+    text-align: center;
     cursor: pointer;
+    transition: 0.4s;
 }
 .button:hover {
     background: var(--component-layer);
     transform: scale(1.1);
+}
+
+#clearFilter {
+    margin: 0 2rem 1rem 2rem;
+    color: #999;
+    cursor: pointer;
+    width: fit-content;
+    font-style: italic;
+}
+#clearFilter:hover {
+    color: white;
 }
 
 .title {
@@ -58,10 +96,10 @@ body {
 
 .search {
     box-sizing: border-box;
-    width: 50vw;
+    width: 45vw;
     display: block;
     border-radius: var(--borderRadius);
-    border: 0;
+    border: 2px solid var(--component-layer);
     outline: 0;
     padding: 0.5rem 1.5rem;
     background-color: var(--component-layer);
@@ -70,10 +108,28 @@ body {
     color: white;
 }
 
+#datetime-local-filter {
+    width: 300px;
+    display: block;
+    outline: 0;
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 1.1rem;
+    color: #999;
+    appearance: none;
+}
+
+#datetime-local-filter::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+}
+
 #clipboard {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-gap: 1rem;
+    padding: 0 2rem;
 }
 
 #clipboard .pasted {
@@ -84,7 +140,10 @@ body {
     border: 2px solid var(--component-layer);
     border-radius: var(--borderRadius);
     height: fit-content;
-    background: var(--component-layer);
+    background-color: var(--component-layer);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
     color: var(--text);
     font-family: inherit;
     font-size: 1rem;
@@ -92,12 +151,12 @@ body {
     width: 100%;
     display: block;
     overflow-y: hidden !important;
+    transition: 0.3s;
 }
 
 #clipboard .pasted:hover {
-    background-color: rgba(0, 102, 255, 0.654);
-    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.3);
-    transform: scale(1.04);
+    border: 2px solid transparent;
+    box-shadow: 0 0 0 5px rgb(0, 102, 255);
 }
 
 #clipboard .pasted .details {
@@ -183,14 +242,18 @@ body {
     z-index: 100;
     width: 40vw;
     position: fixed;
+    min-height: 70vh;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -30%);
-    background-color: #111;
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(2rem);
+    -webkit-backdrop-filter: blur(2rem);
     border-radius: 10px;
-    padding: 1.5rem 1.2rem 1rem 1.2rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 101;
+    max-height: 200px;
+    overflow-y: scroll;
 }
 
 code {
@@ -198,34 +261,24 @@ code {
     font-family: monospace;
     font-size: 0.9rem;
     color: var(--text);
-    max-height: 200px;
+    height: 100%;
     overflow-y: scroll;
     margin-top: 2rem;
+    padding: 8px;
+    margin-bottom: 0;
 }
 
 .menu-popup h2 {
-    display: flex;
-    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #ccc;
+    padding: 8px;
     margin: 0;
 }
 
 .menu-popup p {
-    margin-top: 0;
+    margin: 0;
     color: var(--text);
-}
-
-.close-icon {
-    color: var(--text);
-    cursor: pointer;
-    width: 2.5rem;
-    height: 2.5rem;
-    transition: 0.3s;
-    border-radius: 100rem;
-    padding: 0.3rem;
-}
-
-.close-icon:hover {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 @media screen and (max-width: 500px) {

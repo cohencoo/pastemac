@@ -6,7 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Settings</title>
         <link rel="stylesheet" href="../index.css" />
-        <link rel="stylesheet" href="settings.css" />
         <script>
             const { ipcRenderer } = require("electron")
         </script>
@@ -37,7 +36,8 @@
         <input style="display: none;" id="color" type="color" />
         <div class="panel">
             <div class="flex" style="align-items: center;">
-                <p>Theme</p>
+                <p>Theme (refresh required)</p>
+
                 <div onclick="document.getElementById('color').click()" class="color">
                     <div class="colorPreview"></div>
                     <div>
@@ -49,38 +49,11 @@
             </div>
         </div>
 
-        <h4>Layout</h4>
-        <div class="panel">
-            <p>Limit amount: show up to <b class="limitPreview"></b> pastes</p>
-            <input
-                style="margin-top: 1rem;"
-                type="range"
-                min="150"
-                max="1500"
-                step="150"
-                id="limit"
-            />
-            <div class="flex" style="margin-top: 1rem; margin-left: 0.25rem;">
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-                <div class="marker"></div>
-            </div>
-        </div>
-
         <h4>Keyboard Shortcuts</h4>
         <div class="panel">
             <p>Show PasteMac</p>
             <br />
-            <span>Hold <kbd>Option</kbd> <kbd>V</kbd> to temporarily show PasteMac </span>
+            <span>Hold <kbd>Option</kbd> <kbd>V</kbd> to show PasteMac </span>
         </div>
-
-        <script src="color.js"></script>
     </body>
 </html>

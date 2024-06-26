@@ -1,4 +1,12 @@
-const { app, BrowserWindow, clipboard, ipcMain, globalShortcut, screen } = require("electron")
+const {
+    app,
+    BrowserWindow,
+    clipboard,
+    ipcMain,
+    globalShortcut,
+    screen,
+    Notification,
+} = require("electron")
 const path = require("path")
 const fs = require("fs")
 const axios = require("axios")
@@ -12,6 +20,7 @@ const checkLocations = {
 }
 
 async function checkUpdates() {
+    let didUpdate = false
     for (const item of Object.keys(checkLocations)) {
         const localFilePath = path.join(__dirname, item)
 
@@ -26,6 +35,12 @@ async function checkUpdates() {
                 fs.writeFileSync(localFilePath, remoteContent, "utf-8")
             }
         } catch (error) {}
+    }
+    if (didUpdate) {
+        new Notification({
+            title: "Update available",
+            body: "PasteMac is ready to update. Relaunch for newest changes!",
+        }).show()
     }
     return true
 }

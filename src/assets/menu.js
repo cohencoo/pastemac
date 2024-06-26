@@ -1,7 +1,6 @@
 var $CONTAINER, $POPUP
 var menus = []
 const Menu = {
-    closeIcon: `<svg onclick="Menu.close()" class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" strokeLinejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
     closeBtn:
         '<button style="margin-bottom: 0; color: var(--subtext); font-weight: 500; background: var(--shade-3)" onclick="Menu.close()">Cancel</button>',
     close: function () {
@@ -38,7 +37,7 @@ const Menu = {
             $POPUP.style.opacity = "100%"
             $POPUP.style.transform = "translate(-50%, -50%)"
         }, 100)
-        let head = `<h2>${title}${close ? this.closeIcon : ""}</h2>`
+        let head = `<h2>${title}</h2>`
         !title ? (head = null) : null
         $POPUP.innerHTML = `${head}<p>${content}</p>${
             actions == true && close == true ? this.closeBtn : ""
