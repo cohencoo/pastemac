@@ -111,10 +111,7 @@ function update(clipboard) {
             div.className = "pasted"
             div.style.backgroundImage = data.image ? `url('${data.image}')` : undefined
             div.innerHTML = `
-                <textarea style="opacity: ${data.image ? 0 : 1}" id=${
-                data.id
-            } spellcheck="false" onclick="this.select(); document.execCommand('copy'); this.blur(); minimise();"></textarea>
-
+<textarea style="opacity: ${data.image ? 0 : 1}" id=${data.id} spellcheck="false"></textarea>
                 <div class="details">
                     <div class="flex">
                         <div>${data.text.length} bytes</div>
@@ -133,11 +130,28 @@ function update(clipboard) {
             `
 
             document.getElementById("clipboard").appendChild(div)
+
+            document.getElementById(data.id).onclick = () => {
+                if (data.image) {
+                    window.open(data.image, "_blank")
+                    return
+                }
+                document.getElementById(data.id).select()
+                document.execCommand("copy")
+                document.getElementById(data.id).blur()
+                minimise()
+            }
+
             document.getElementById(data.id).value = data.text
             document.getElementById("delete-" + data.id).onclick = () => {
                 ipcRenderer.sendSync("delete", data.id)
             }
             document.getElementById("more-" + data.id).onclick = () => {
+                if (data.image) {
+                    window.open(data.image, "_blank")
+                    return
+                }
+
                 Menu.open(
                     {
                         title: new Date(data.time).toLocaleString("en-US", { hour12: true }),

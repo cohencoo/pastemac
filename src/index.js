@@ -97,8 +97,8 @@ const createWindow = () => {
     settings.loadFile(path.join(__dirname, "settings/settings.html"))
     settings.hide()
 
-    mainWindow.setAlwaysOnTop(true, "floating")
-    mainWindow.setVisibleOnAllWorkspaces(true)
+    // mainWindow.setAlwaysOnTop(true, "floating")
+    // mainWindow.setVisibleOnAllWorkspaces(true)
 
     ipcMain.on("settings", (event) => {
         settings.show()
@@ -142,7 +142,7 @@ const createWindow = () => {
 }
 app.on("ready", async () => {
     if (await checkUpdates()) {
-        createWindow()
+        if (!mainWindow) createWindow()
         mainWindow.show()
     }
 })
@@ -152,7 +152,7 @@ app.on("window-all-closed", () => {
 
 app.on("activate", async () => {
     if (await checkUpdates()) {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (BrowserWindow.getAllWindows().length === 0 && !mainWindow) createWindow()
         if (mainWindow) {
             mainWindow.webContents.send("renew")
             mainWindow.show()

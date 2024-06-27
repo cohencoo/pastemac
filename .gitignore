@@ -1,3 +1,7 @@
+# private stuff
+/src/paste
+/src/images/
+
 # Logs
 logs
 *.log
