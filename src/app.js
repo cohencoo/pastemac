@@ -2,6 +2,7 @@ const { ipcRenderer } = require("electron")
 const dateFilter = document.getElementById("datetime-local-filter")
 let renderOnce = true
 let pagination = 15
+let filterWithType = ""
 
 const renew = () =>
     fetch("paste")
@@ -48,7 +49,8 @@ window.onscroll = () => {
 
 document.onkeydown = (e) => {
     if (e.key === "Escape") {
-        if (!document.getElementById("search").value && !dateFilter.value) minimise()
+        if (!document.getElementById("search").value && !dateFilter.value && !filterWithType)
+            minimise()
         else clearFilter()
     }
     if (e.key === "Shift") {
@@ -68,6 +70,7 @@ document.onkeyup = (e) => {
 function clearFilter() {
     document.getElementById("search").value = ""
     dateFilter.value = ""
+    filterWithType = ""
     renew()
 }
 
@@ -79,13 +82,18 @@ function minimise() {
     }, 500)
 }
 
+function isLink(clipboard, id) {
+    return clipboard[id].text.startsWith("http") && clipboard[id].text.split(" ").length === 1
+}
+
 function update(clipboard) {
     const query = document.getElementById("search")
 
     document.getElementById("clearFilter").style.display =
-        !query.value && !dateFilter.value ? "none" : "block"
+        !query.value && !dateFilter.value && !filterWithType ? "none" : "block"
 
     document.getElementById("clipboard").innerHTML = null
+
     const results = Object.keys(clipboard)
         .reverse()
         .filter((id) => {
@@ -98,6 +106,16 @@ function update(clipboard) {
             const compareText = queryValue
                 ? clipboard[id].text.toLowerCase().includes(queryValue)
                 : true
+
+            if (filterWithType === "images") {
+                const hasImage = clipboard[id].image !== undefined
+                return compareTime && compareText && hasImage
+            }
+
+            if (filterWithType === "links") {
+                return compareTime && compareText && isLink(clipboard, id)
+            }
+
             return compareTime && compareText
         })
 
@@ -111,7 +129,9 @@ function update(clipboard) {
             div.className = "pasted"
             div.style.backgroundImage = data.image ? `url('${data.image}')` : undefined
             div.innerHTML = `
-<textarea style="opacity: ${data.image ? 0 : 1}" id=${data.id} spellcheck="false"></textarea>
+<textarea style="color: ${isLink(clipboard, pasted) ? "#395dff" : undefined}; opacity: ${
+                data.image ? 0 : 1
+            }" id=${data.id} spellcheck="false"></textarea>
                 <div class="details">
                     <div class="flex">
                         <div>${data.text.length} bytes</div>
@@ -120,10 +140,10 @@ function update(clipboard) {
                     </div>
                     <div class="flex">
                         <div id=${"more-" + data.id} class="more">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; height: 100%; width: 100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
                         </div>
                         <div id=${"delete-" + data.id} class="delete">
-                            <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; height: 100%; width: 100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                         </div>
                     </div>
                 </div>
@@ -155,9 +175,7 @@ function update(clipboard) {
                 Menu.open(
                     {
                         title: new Date(data.time).toLocaleString("en-US", { hour12: true }),
-                        content: data.image
-                            ? `<div style="margin-top: 0; outline: 0" contenteditable="true">${data.image}<br><img style="width: 100%; height: 100%;" src="${data.image}" /></div>`
-                            : `<code style="margin-top: 0; outline: 0" contenteditable="true" id="editable-${data.id}"></code>`,
+                        content: `<code style="margin-top: 0; outline: 0" contenteditable="true" id="editable-${data.id}"></code>`,
                     },
                     false
                 )
