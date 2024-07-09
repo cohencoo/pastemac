@@ -4,10 +4,14 @@ let renderOnce = true
 let pagination = 15
 let filterWithType = ""
 
-const renew = () =>
-    fetch("paste")
-        .then((e) => e.json())
-        .then((e) => update(e))
+const renew = () => {
+    // defer stress on the main thread
+    setTimeout(() => {
+        fetch("paste")
+            .then((e) => e.json())
+            .then((e) => update(e))
+    }, 200)
+}
 
 ipcRenderer.on("renew", () => {
     renew()
