@@ -127,9 +127,6 @@ const createWindow = () => {
         mainWindow.webContents.send("renew")
         mainWindow.show()
     })
-    globalShortcut.register("F2", () => {
-        exec("pmset displaysleepnow")
-    })
     mainWindow.on("close", (e) => {
         e.preventDefault()
         mainWindow.hide()
@@ -202,33 +199,14 @@ function onClipboardChange() {
 
 let lastTextValue = null
 setInterval(() => {
-    const value =
-        clipboard.readImage()?.toPNG().length > 200
-            ? clipboard.readImage()?.toPNG().length
-            : clipboard.readText()
+    // const value =
+    //     clipboard.readImage()?.toPNG().length > 200
+    //         ? clipboard.readImage()?.toPNG().length
+    //         : clipboard.readText()
 
+    const value = clipboard.readText()
     if (value !== lastTextValue) {
         lastTextValue = value
         onClipboardChange(value)
     }
 }, 300)
-
-// wanting to get it to work here, but it's not working.
-
-// setInterval(() => {
-//     const value =
-//         clipboard.readImage()?.toPNG().length > 200
-//             ? clipboard.readImage()?.toPNG().length
-//             : clipboard.readText()
-
-//     // only trigger clipboard change if either text value is different, or image value is different
-//     if (value !== lastTextValue && clipboard.readImage()?.toPNG().length < 200) {
-//         lastTextValue = value
-//         onClipboardChange(value)
-//     }
-//     if (value !== lastImageValue && clipboard.readImage()?.toPNG().length > 200) {
-//         lastImageValue = value
-//         onClipboardChange(value)
-//         lastTextValue = value
-//     }
-// }, 300)

@@ -62,6 +62,9 @@ document.onkeydown = (e) => {
         document.body.style.overflow = "hidden"
         document.querySelectorAll("textarea").forEach((e) => (e.style.overflowY = "scroll"))
     }
+    if (e.key.length === 1 && document.activeElement !== document.getElementById("search")) {
+        document.getElementById("search").focus()
+    }
 }
 document.onkeyup = (e) => {
     if (e.key === "Shift") {
